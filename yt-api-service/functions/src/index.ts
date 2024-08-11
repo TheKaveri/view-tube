@@ -16,6 +16,7 @@ const storage = new Storage(); // new storage object
 const rawVideoBucketName = "narmada-raw-videos";
 
 const videoCollectionId = "videos";
+const userCollectionId = "users";
 
 export interface Video {
   id?: string,
@@ -26,6 +27,13 @@ export interface Video {
   description?: string,
   date?: string,
   thumbnail?: string
+}
+
+export interface User {
+  displayName?: string,
+  email?: string,
+  photoURL?: string,
+  uid?:string
 }
 
 // This funtion will be invoked by an event. The event
@@ -81,4 +89,18 @@ export const getVideos = onCall({maxInstances: 1}, async () => {
   const snapshot = await firestore.collection(videoCollectionId)
     .limit(10).get();
   return snapshot.docs.map((doc) => doc.data());
+});
+
+export const getVideoUploader = onCall({maxInstances: 1}, async (request) => {
+  const videoId = request.data.videoId;
+  const snapshotVideo = await firestore.collection(videoCollectionId)
+    .doc(videoId).get();
+
+  const video = snapshotVideo.data() as Video;
+  const uid = video.uid;
+  // could've obtained uid via splitting videoId
+  const snapshotUser = await firestore.collection(userCollectionId)
+    .doc(uid as string) .get();
+
+  return snapshotUser.data() as User;
 });
