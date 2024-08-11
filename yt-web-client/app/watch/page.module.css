@@ -1,0 +1,13 @@
+.video {
+    border-radius: 8px;
+    width: 100%;
+    max-width: 50vw;
+    height: auto; /* Maintain aspect ratio */
+    max-height: 60vh;
+    object-fit: contain;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    background: black;
+    position: relative; /* Positioning for overlay elements */
+    display: block; /* Ensure it's a block-level element */
+    margin: auto; /* Center the video horizontally */
+}

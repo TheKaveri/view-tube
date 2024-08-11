@@ -1,0 +1,25 @@
+.uploadInput {
+    display: none; /* Hide the default input */
+}
+  
+.uploadButton {
+    display: flex; /* Use Flexbox to center the text */
+    justify-content: center; /* Center text horizontally */
+    align-items: center; /* Center text vertically */
+    width: 25px; /* Slightly larger for better visibility */
+    height: 25px; /* Slightly larger for better visibility */
+    border-radius: 50%; /* Make it circular */
+    color: #333; /* Dark text color */
+    border: 1px solid gray;
+    background-color: #f0f0f0; /* Gradient background */
+    cursor: pointer;
+    padding: 0.5em;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Smooth transitions */
+}
+  
+  .uploadButton:hover {
+    background-color: #f0f0f0; /* Lighter background color on hover */
+    transform: scale(1.1); /* Slightly enlarge the button on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow on hover */
+  }
+  

@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 1em;
+  /* justify-content: space-between; */
+  gap: 3em;
+}
+
+.videoLink {
+  text-decoration: none; /* Remove underline from links */
+  display: block; /* Make link a block element to contain the thumbnail and title */
+  width: 300px; /* Same width as the thumbnail */
+  border-radius: 8px; /* Rounded corners */
+  overflow: hidden; /* Ensure no overflow */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth transition */
+  background-color: #f0f0f0;
+}
+
+.videoLink:hover {
+  transform: scale(1.1); /* Slightly enlarge the item on hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Darker shadow on hover */
+}
+
+.thumbnail {
+  border-radius: 8px; /* Rounded corners for images */
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  object-fit: cover;
+}
+
+.title {
+  padding: 0.5em;
+  font-size: 15px;
+  text-align: center;
+  text-transform:capitalize;
+  color: #333;
+  background-color: #f0f0f0;
+  text-overflow: ellipsis;
+  font-family: "Roboto","Arial",sans-serif;
+}

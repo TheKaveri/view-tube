@@ -1,0 +1,21 @@
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 1em;
+    padding-top: 0;
+    padding-bottom: 0;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+
+.container {
+  display: flex;
+  align-items: center; 
+  gap: 1em;
+} 
+
+.title {
+  text-decoration: none;
+  color: inherit;
+}
