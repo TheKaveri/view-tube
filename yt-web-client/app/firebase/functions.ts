@@ -9,6 +9,8 @@ const generateUploadUrlFunction = httpsCallable(functions, 'generateUploadUrl');
 
 const getVideosFunction = httpsCallable(functions, 'getVideos');
 
+const getVideoUploaderFunction = httpsCallable(functions, 'getVideoUploader');
+
 export interface Video {
   id?: string,
   uid?: string,
@@ -18,6 +20,13 @@ export interface Video {
   description?: string,
   date?: string,
   thumbnail?: string
+}
+
+export interface User {
+  displayName?: string,
+  email?: string,
+  photoURL?: string,
+  uid?:string
 }
 
 export async function uploadVideo(file: File) {
@@ -44,4 +53,10 @@ export async function uploadVideo(file: File) {
 export async function getVideos() {
     const response = await getVideosFunction();
     return response.data as Video[];
+}
+
+export async function getVideoUploader(vidId: string) {
+  const response = await getVideoUploaderFunction({ videoId: vidId });
+  const videoUploader = response.data as User;
+  return videoUploader;
 }
