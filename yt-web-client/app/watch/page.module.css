@@ -1,13 +1,62 @@
 .video {
     border-radius: 8px;
-    width: 100%;
-    max-width: 50vw;
+    width: 50%;
+    /* max-width: 50vw; */
     height: auto; /* Maintain aspect ratio */
-    max-height: 60vh;
+    /* max-height: 60vh; */
     object-fit: contain;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     background: black;
     position: relative; /* Positioning for overlay elements */
-    display: block; /* Ensure it's a block-level element */
+    /* display: block; Ensure it's a block-level element */
     margin: auto; /* Center the video horizontally */
+}
+
+.uploaderIcon {
+    width: 40px;          
+    height: 40px;        
+    border-radius: 50%; 
+    object-fit: cover;  
+    border: 2px solid white;
+    cursor: pointer;
+  }
+  
+  .uploaderContainer {
+    display: flex;
+    align-items: center; 
+    gap: 1em;
+  }
+  
+  .uploaderInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-family: "Roboto","Arial",sans-serif;
+  }
+  
+  .uploaderInfo .displayName {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .uploaderInfo .email {
+    font-size: 14px; 
+    color: #666;
+  }
+  
+  .uploaderInfo br {
+    margin: 5px 0;
+  }
+
+.watchPageContainer {
+    padding-left: 1em;
+}
+
+.watchPageContainer h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.5em;
+    text-align: left;
 }
