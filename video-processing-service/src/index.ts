@@ -32,7 +32,7 @@ app.post("/process-video", async (req, res) => {
     const outputFileName = `processed-${inputFileName}`;
     const videoId = inputFileName.split('.')[0];
 
-    const thumbnailFileName = `thumbnail-${inputFileName}`.split('.')[0] + '.jpg';
+    const thumbnailFileName = `thumbnail-${inputFileName}`.split('.')[0] + '.png';
     // change the extension to jpg
 
     if (!isVideoNew(videoId)) {

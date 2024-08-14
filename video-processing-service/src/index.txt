@@ -11,6 +11,7 @@ app.use(express.json());
 app.post('/process-video-test', (req, res) => {
     const inputFilePath = req.body.inputFilePath;
     const outputFilePath = req.body.outputFilePath;
+    const thumbnailFilePath = req.body.thumbnailFilePath
   
     if (!inputFilePath || !outputFilePath) {
       return res.status(400).send('Bad Request: Missing file path');
@@ -28,6 +29,20 @@ app.post('/process-video-test', (req, res) => {
           res.status(500).send('An error occurred: ' + err.message);
       })
       .save(outputFilePath);
+
+
+    ffmpeg(inputFilePath)
+      .outputOptions('-vf', "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1", '-frames:v', '1')
+      .on('end', function() {
+          console.log('Thumbnail creation finished successfully');
+          res.status(200).send('Thumbnail creation finished successfully');
+      })
+      .on('error', function(err: any) {
+          console.log('An error occurred: ' + err.message);
+          res.status(500).send('An error occurred: ' + err.message);        
+      })
+      .save(thumbnailFilePath)
+
   });
   
 const port = process.env.PORT || 4000;

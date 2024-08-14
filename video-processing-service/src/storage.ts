@@ -19,6 +19,8 @@ const processedVideoBucketName = "narmada-processed-videos";
 const localRawVideoPath = "./raw-videos";
 const localProcessedVideoPath = "./processed-videos";
 
+const scalePadCommand = "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1"
+
 /**
  * Creates the local directories for raw and processed videos in our Docker container.
  */
@@ -36,7 +38,7 @@ export function convertVideo(rawVideoName: string, processedVideoName: string) {
     return new Promise<void>((resolve, reject) => {
         // Async function to process the video to 360p
         ffmpeg(`${localRawVideoPath}/${rawVideoName}`)
-        .outputOptions('-vf', "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1")
+        .outputOptions('-vf', scalePadCommand)
         // Scale to 720p but keep the aspect ratio. Frustratingly Cloud Run gives me errors when I try to add watermarks; does work locally.
         // Refer: https://ffmpeg.org/ffmpeg-utils.html#Video-rate
         // https://stackoverflow.com/questions/17623676/text-on-video-ffmpeg
@@ -160,7 +162,7 @@ export function generateThumbnail(rawVideoName: string, thumbnailVideoName: stri
     return new Promise<void>((resolve, reject) => {
         // Async function to process the video to 360p
         ffmpeg(`${localRawVideoPath}/${rawVideoName}`)
-        .outputOptions("-frames:v", "1") // generate a single frame
+        .outputOptions("-vf", scalePadCommand, "-frames:v", "1") // generate a single frame
         .on("end", () => {
             console.log("Thumbnail generation finished successfully.");
             resolve();
