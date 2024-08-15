@@ -26,7 +26,7 @@ function WatchPage() {
     res = res?.split("processed-")[1]
 
     const thumbnailSrc = "thumbnail-" + res + ".png";
-    const videoName = res?.split("-")[2];
+    const videoName = res?.split("-").slice(2).join("-");
 
     useEffect(() => {
         const fetchUploader = async () => {
