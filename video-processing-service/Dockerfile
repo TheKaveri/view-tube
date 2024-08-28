@@ -34,6 +34,9 @@ RUN npm install --only=production
 # Copy built app from the builder stage
 COPY --from=builder /app/dist ./dist
 
+# Copy the .env file from the host to the container (added additionally)
+COPY .env ./
+
 # Make port 3000 available to the world outside this container
 EXPOSE 3000
 

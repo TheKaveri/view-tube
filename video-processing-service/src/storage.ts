@@ -16,7 +16,7 @@ const processedVideoBucketName = "narmada-processed-videos";
 
 // we will temporarily download from the bucket and process 
 // locally to reduce latency.
-const localRawVideoPath = "./raw-videos";
+export const localRawVideoPath = "./raw-videos";
 const localProcessedVideoPath = "./processed-videos";
 
 const scalePadCommand = "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1"

@@ -1,8 +1,10 @@
 import express from "express";
 // the wrapper helps us use ffmeg in typescript like a library.
 
-import { convertVideo, deleteProcessedVideo, deleteRawVideo, downloadRawVideo, setupDirectories, uploadProcessedVideo, generateThumbnail, uploadGeneratedThumbnail, deleteGeneratedThumbnail } from "./storage";
+import { convertVideo, deleteProcessedVideo, deleteRawVideo, downloadRawVideo, setupDirectories, uploadProcessedVideo, generateThumbnail, uploadGeneratedThumbnail, deleteGeneratedThumbnail, localRawVideoPath } from "./storage";
 import { isVideoNew, setVideo } from "./firestore";
+
+import { safecheck } from "./safecheck";
 
 setupDirectories();
 
@@ -60,6 +62,25 @@ app.post("/process-video", async (req, res) => {
 
     // download the raw video from Google Cloud Storage
     await downloadRawVideo(inputFileName);
+
+    // check if the video is safe
+    try {
+        const isExplicitFlag = await safecheck(`${localRawVideoPath}/${inputFileName}`);
+        if (isExplicitFlag) {
+            // clean up the local files
+            await Promise.all([
+                deleteRawVideo(inputFileName),
+                deleteProcessedVideo(outputFileName)
+            ])
+            return res.status(400).send('Bad Request: Video contains explicit content.');
+        }
+        else {
+            console.log('safecheck passed');
+        }
+    } catch (error) {
+        console.error(error);
+        console.log('SightEngine API failed. Continuing the processing...');
+    }
 
     // convert the video to 360p
     try {
