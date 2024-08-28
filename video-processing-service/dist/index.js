@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 // the wrapper helps us use ffmeg in typescript like a library.
 const storage_1 = require("./storage");
 const firestore_1 = require("./firestore");
+const explicit_check_1 = require("./explicit-check");
 (0, storage_1.setupDirectories)();
 const app = (0, express_1.default)();
 // creates an instance of an express app
@@ -40,8 +41,10 @@ app.post("/process-video", (req, res) => __awaiter(void 0, void 0, void 0, funct
     const inputFileName = data.name; // Format is <UID>-<DATE>-<TITLE>.<EXTENSION>
     const outputFileName = `processed-${inputFileName}`;
     const videoId = inputFileName.split('.')[0];
-    const thumbnailFileName = `thumbnail-${inputFileName}`.split('.')[0] + '.jpg';
+    const thumbnailFileName = `thumbnail-${inputFileName}`.split('.')[0] + '.png';
     // change the extension to jpg
+    // generate gcsUri from file name
+    const gcsUri = "gs://" + storage_1.rawVideoBucketName + inputFileName;
     if (!(0, firestore_1.isVideoNew)(videoId)) {
         return res.status(400).send("Bad Request: Video already processing or processed");
     }
@@ -62,6 +65,15 @@ app.post("/process-video", (req, res) => __awaiter(void 0, void 0, void 0, funct
         //     status: 'processing'
         // });
     }
+    const isExplicitFlag = yield (0, explicit_check_1.isExplicit)(gcsUri);
+    if (isExplicitFlag) {
+        // video is explicit so we stop
+        return res.status(400).send('Processing Aborted: Video is explicit.');
+    }
+    else {
+        console.log("Passed explicit check.");
+    }
+    // video is not explicit so no worries
     // download the raw video from Google Cloud Storage
     yield (0, storage_1.downloadRawVideo)(inputFileName);
     // convert the video to 360p

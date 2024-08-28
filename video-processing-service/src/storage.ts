@@ -11,7 +11,7 @@ const storage = new Storage(); // creates an instance of Google Cloud Storage SD
 // A bucket in Google Cloud Storage is like a folder with a globally unique name.
 // Unlike a folder, a bucket can't be nested inside another bucket.
 
-const rawVideoBucketName = "narmada-raw-videos"; // where users will upload their raw videos
+export const rawVideoBucketName = "narmada-raw-videos"; // where users will upload their raw videos
 const processedVideoBucketName = "narmada-processed-videos";
 
 // we will temporarily download from the bucket and process 

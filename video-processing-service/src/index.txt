@@ -4,6 +4,8 @@
 import express from 'express';
 import ffmpeg from 'fluent-ffmpeg';
 
+import { isExplicit } from './explicit-check';
+
 const app = express();
 app.use(express.json());
 
@@ -45,7 +47,20 @@ app.post('/process-video-test', (req, res) => {
 
   });
   
-const port = process.env.PORT || 4000;
+app.get('/safecheck-video-test', async (req, res) => {
+  // 'gs://narmada-raw-videos/xK0YA39iOrhmFayVFXc4cmpAgPH3-1723662518559-bear.mp4';
+  const gcsUri_ = req.body.gcsUri
+
+  if (!gcsUri_){
+    return res.status(400).send('Bad Request: Missing gcsUri_');
+  }
+
+  const isExplicitFlag = await isExplicit(gcsUri_);
+
+  res.send(isExplicitFlag)
+})
+
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Running on ${port}`);
 });

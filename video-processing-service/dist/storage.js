@@ -15,6 +15,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.rawVideoBucketName = void 0;
 exports.setupDirectories = setupDirectories;
 exports.convertVideo = convertVideo;
 exports.downloadRawVideo = downloadRawVideo;
@@ -30,12 +31,13 @@ const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg")); // this is a 
 const storage = new storage_1.Storage(); // creates an instance of Google Cloud Storage SDK
 // A bucket in Google Cloud Storage is like a folder with a globally unique name.
 // Unlike a folder, a bucket can't be nested inside another bucket.
-const rawVideoBucketName = "narmada-raw-videos"; // where users will upload their raw videos
+exports.rawVideoBucketName = "narmada-raw-videos"; // where users will upload their raw videos
 const processedVideoBucketName = "narmada-processed-videos";
 // we will temporarily download from the bucket and process 
 // locally to reduce latency.
 const localRawVideoPath = "./raw-videos";
 const localProcessedVideoPath = "./processed-videos";
+const scalePadCommand = "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1";
 /**
  * Creates the local directories for raw and processed videos in our Docker container.
  */
@@ -52,8 +54,8 @@ function convertVideo(rawVideoName, processedVideoName) {
     return new Promise((resolve, reject) => {
         // Async function to process the video to 360p
         (0, fluent_ffmpeg_1.default)(`${localRawVideoPath}/${rawVideoName}`)
-            .outputOptions("-vf", "drawtext=fontfile=/path/to/font.ttf:text='scaled to 720p via ffmpeg':fontcolor=white:fontsize=24:box=1:boxcolor=black@0.5:boxorder w=5:x=10:y=10", "-codec:a", "copy")
-            // Scale to 720p but keep the aspect ratio and add a wartermark.
+            .outputOptions('-vf', scalePadCommand)
+            // Scale to 720p but keep the aspect ratio. Frustratingly Cloud Run gives me errors when I try to add watermarks; does work locally.
             // Refer: https://ffmpeg.org/ffmpeg-utils.html#Video-rate
             // https://stackoverflow.com/questions/17623676/text-on-video-ffmpeg
             // https://stackoverflow.com/questions/46671252/how-to-add-black-borders-to-video
@@ -81,14 +83,14 @@ function convertVideo(rawVideoName, processedVideoName) {
  */
 function downloadRawVideo(fileName) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield storage.bucket(rawVideoBucketName)
+        yield storage.bucket(exports.rawVideoBucketName)
             .file(fileName)
             .download({
             destination: `${localRawVideoPath}/${fileName}`
         });
         // log only after the file has been downloaded. `download` method is an async
         // function, so we use await keyword.
-        console.log(`gs://${rawVideoBucketName}/${fileName} downloaded to ${localRawVideoPath}/${fileName}`);
+        console.log(`gs://${exports.rawVideoBucketName}/${fileName} downloaded to ${localRawVideoPath}/${fileName}`);
     });
 }
 /**
@@ -169,7 +171,7 @@ function generateThumbnail(rawVideoName, thumbnailVideoName) {
     return new Promise((resolve, reject) => {
         // Async function to process the video to 360p
         (0, fluent_ffmpeg_1.default)(`${localRawVideoPath}/${rawVideoName}`)
-            .outputOptions("-frames:v", "1") // generate a single frame
+            .outputOptions("-vf", scalePadCommand, "-frames:v", "1") // generate a single frame
             .on("end", () => {
             console.log("Thumbnail generation finished successfully.");
             resolve();

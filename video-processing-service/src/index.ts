@@ -1,8 +1,10 @@
 import express from "express";
 // the wrapper helps us use ffmeg in typescript like a library.
 
-import { convertVideo, deleteProcessedVideo, deleteRawVideo, downloadRawVideo, setupDirectories, uploadProcessedVideo, generateThumbnail, uploadGeneratedThumbnail, deleteGeneratedThumbnail } from "./storage";
+import { convertVideo, deleteProcessedVideo, deleteRawVideo, downloadRawVideo, setupDirectories, uploadProcessedVideo, generateThumbnail, uploadGeneratedThumbnail, deleteGeneratedThumbnail, rawVideoBucketName } from "./storage";
 import { isVideoNew, setVideo } from "./firestore";
+
+import { isExplicit } from "./explicit-check";
 
 setupDirectories();
 
@@ -35,6 +37,9 @@ app.post("/process-video", async (req, res) => {
     const thumbnailFileName = `thumbnail-${inputFileName}`.split('.')[0] + '.png';
     // change the extension to jpg
 
+    // generate gcsUri from file name
+    const gcsUri = "gs://" + rawVideoBucketName + inputFileName;
+
     if (!isVideoNew(videoId)) {
         return res.status(400).send("Bad Request: Video already processing or processed");
     } else {
@@ -57,6 +62,15 @@ app.post("/process-video", async (req, res) => {
         // });
     }
 
+    const isExplicitFlag = await isExplicit(gcsUri);
+
+    if (isExplicitFlag) {
+        // video is explicit so we stop
+        return res.status(400).send('Processing Aborted: Video is explicit.');
+    } else {
+        console.log("Passed explicit check.")
+    }
+    // video is not explicit so no worries
 
     // download the raw video from Google Cloud Storage
     await downloadRawVideo(inputFileName);
